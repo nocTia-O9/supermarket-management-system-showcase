@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shanzhu.market.mapper.GoodsMapper">
+
+    <select id="getNoticeInTotalCount" resultType="java.lang.Integer">
+        select count(g.id) from goods g
+        join (SELECT g.id,IFNULL(SUM(gs.residue_num),0) sum from goods g left join t_goods_store gs on g.id=gs.goods_id
+        GROUP BY g.id) temp on g.id=temp.id
+        <where>
+            g.inventory !=0 and IFNULL(g.inventory,0)-temp.sum>0 and g.state='0'
+            <if test="name !=null">
+                and g.name like concat('%',#{name},'%')
+            </if>
+        </where>
+    </select>
+    <select id="getNoticePageList" resultType="com.shanzhu.market.entity.domain.NoticeIn">
+        select g.id,g.name,g.purchash_price purchashPrice,g.cover_url
+        coverUrl,(IFNULL(g.inventory,0)-IFNULL(temp.sum,0)) goodsNum from goods g
+        join (SELECT g.id,IFNULL(SUM(gs.residue_num),0) sum from goods g left join t_goods_store gs on g.id=gs.goods_id
+        GROUP BY g.id) temp
+        on g.id=temp.id
+        <where>
+            g.inventory !=0 and IFNULL(g.inventory,0)-temp.sum>0 and g.state='0'
+            <if test="name!=null">
+                and g.name like concat('%',#{name},'%')
+            </if>
+        </where>
+        LIMIT #{start},#{size}
+    </select>
+    <select id="getNoticeOutShelvesTotalCount" resultType="java.lang.Integer">
+        select count(id) from goods
+        <where>
+            IFNULL(shelves,0)-IFNULL(residue_num,0)>0 and state='0'
+            <if test="name !=null">
+                and name like concat('%',#{name},'%')
+            </if>
+        </where>
+    </select>
+    <select id="getNoticeShelvesPageList"
+            resultType="com.shanzhu.market.entity.domain.NoticeOut">
+        select id,name,cover_url coverUrl, (IFNULL(shelves,0)-IFNULL(residue_num,0)) goodsNum from goods
+        <where>
+            IFNULL(shelves,0)-IFNULL(residue_num,0)>0 and state='0'
+            <if test="name !=null">
+                and name like concat('%',#{name},'%')
+            </if>
+        </where>
+    </select>
+    <select id="queryPageStatisticSaleByQo" resultType="java.lang.Long">
+        select sum(sales_volume) from goods where state='0'
+
+    </select>
+</mapper>

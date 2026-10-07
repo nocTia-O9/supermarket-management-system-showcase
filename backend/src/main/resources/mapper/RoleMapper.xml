@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shanzhu.market.mapper.RoleMapper" >
+    <resultMap id="r1" type="com.shanzhu.market.entity.domain.Role">
+        <id property="id" column="id"/>
+        <result property="info" column="info"/>
+        <result property="state" column="state"/>
+        <result property="name" column="name"/>
+    </resultMap>
+    <insert id="saveRolePermissons">
+        insert into t_role_menu (rid,mid) values
+        <foreach collection="list" separator="," item="item">
+            (#{item.rid},#{item.mid})
+        </foreach>
+    </insert>
+    <insert id="reSaveRelation">
+        insert into t_emp_role (eid,rid) values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.eid},#{item.rid})
+        </foreach>
+    </insert>
+    <delete id="clearRecordsByRid">
+        delete from t_role_menu where rid=#{rid}
+    </delete>
+    <delete id="clearRelationByEid">
+        delete from t_emp_role where eid=#{eid}
+    </delete>
+    <select id="queryByEid" resultMap="r1">
+        select r.id,r.info,r.state,r.name from t_role r join t_emp_role er on r.id=er.rid where er.eid=#{eid} and r.state='0'
+    </select>
+    <select id="getMenuIdByRid" resultType="java.lang.Long">
+        select distinct rm.mid from t_role r join t_role_menu rm on r.id= rm.rid where rm.rid=#{rid}
+    </select>
+    <select id="queryRoleIdsByEid" resultType="java.lang.Long">
+        select distinct rid from t_emp_role where eid=#{eid} and rid!=1 and rid!=2
+    </select>
+    <select id="queryRoleIdsAll" resultType="java.lang.Long">
+        select distinct id from t_role where state='0' and id!=1 and id!=2
+    </select>
+</mapper>

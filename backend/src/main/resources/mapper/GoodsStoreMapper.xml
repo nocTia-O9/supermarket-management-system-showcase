@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shanzhu.market.mapper.GoodsStoreMapper">
+    <update id="goodsInStore">
+        update t_goods_store set residue_num=residue_num+#{goodsNum},in_num=in_num+#{goodsNum} where goods_id=#{goodsId} and store_id=#{storeId}
+    </update>
+    <update id="goodsOutStore">
+         update t_goods_store set residue_num=residue_num-#{goodsNum} where goods_id=#{goodsId} and store_id=#{storeId}
+    </update>
+    <select id="storeUsed" resultType="java.lang.Long">
+        select sum(residue_num) from t_goods_store where store_id=#{id}
+    </select>
+    <select id="getResidueNumByGoodsId" resultType="java.lang.Long">
+        select SUM(residue_num) from t_goods_store where goods_id=#{goodsId}
+    </select>
+    <select id="totalStoreNum" resultType="java.lang.Long">
+        select SUM(residue_num) from t_goods_store
+    </select>
+    <select id="getTotalStoreNum1" resultType="java.lang.Long">
+        select SUM(residue_num) from t_goods_store where store_id=#{storeId}
+    </select>
+</mapper>

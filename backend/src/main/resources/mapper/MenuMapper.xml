@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shanzhu.market.mapper.MenuMapper">
+    <resultMap id="m1" type="com.shanzhu.market.entity.domain.Menu">
+        <id property="id" column="id"/>
+        <result property="state" column="state"/>
+        <result property="info" column="info"/>
+        <result property="purl" column="purl"/>
+        <result property="parentLabel" column="parent_label"/>
+        <result property="parentId" column="parent_id"/>
+        <result property="label" column="label"/>
+        <result property="flag" column="flag"/>
+        <result property="type" column="type"/>
+    </resultMap>
+    <select id="queryByRids" resultMap="m1">
+        select m.* from t_menu m join t_role_menu rm on m.id=rm.mid where rm.rid in
+        <foreach collection="rids" item="rid" open="(" separator="," close=")">
+            #{rid}
+        </foreach>
+    </select>
+
+</mapper>
